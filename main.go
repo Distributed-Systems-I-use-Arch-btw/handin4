@@ -17,17 +17,14 @@ func main() {
 		fmt.Println("Too many arguments")
 		os.Exit(1)
 	}
-
 	nr, err := strconv.Atoi(args[1])
 	if err != nil {
 		fmt.Println("Not an integer")
 		os.Exit(1)
 	}
-
-	if nr > len(ports) || nr < 0 {
+	if nr > len(ports) || nr < 1 {
 		fmt.Printf("Out of max range of &d\n", len(ports))
 		os.Exit(1)
 	}
-
-	start.StartClient(nr)
+	start.StartClient(ports[nr])
 }
