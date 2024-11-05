@@ -1,21 +1,25 @@
-package main
+package handin4
 
 import (
 	"fmt"
 	proto "handin4/grpc"
 )
 
-type client struct {
-	proto.UnimplementedChittyChatServer
+var ports = []int{5050, 5051, 5052, 5053, 5054, 5055, 5056, 5057}
+
+type Client struct {
+	proto.UnsafeByzantiumServer
 }
 
-func main() {
+func (c *Client) GetMessage(e *proto.Empty) (*proto.Message, error) {
+	return &proto.Message{}, nil
+}
 
-	s := "gopher"
-	fmt.Printf("Hello and welcome, %s!\n", s)
+func (c *Client) SendMessage(ms *proto.Message) (*proto.Empty, error) {
+	return &proto.Empty{}, nil
+}
 
-	for i := 1; i <= 5; i++ {
+func StartClient(input int) {
 
-		fmt.Println("i =", 100/i)
-	}
+	fmt.Printf("Hello and welcome, %d!\n", input)
 }

@@ -11,3 +11,6 @@ service Byzantium {
   rpc GetMessage (Empty) returns (Message) {};
   rpc SendMessage (Message) returns (Empty) {};
 }
+
+//visf@itu.dk
+//NEEDS TO BE SECRET; DONT SHARE WITH ANYONE!!!!!
