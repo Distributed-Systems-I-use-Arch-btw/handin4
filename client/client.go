@@ -62,11 +62,12 @@ func (s *server) Server(port int) {
 
 func StartClient(input int) {
 	s := &server{}
-	s.Server(input)
 
 	if input == 5051 {
-		client()
+		go client()
 	}
+
+	s.Server(input)
 
 	fmt.Printf("Hello and welcome, %d!\n", input)
 }
