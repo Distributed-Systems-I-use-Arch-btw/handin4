@@ -1,6 +1,7 @@
 package handin4
 
 import (
+	"context"
 	"fmt"
 	"google.golang.org/grpc"
 	proto "handin4/grpc"
@@ -22,26 +23,31 @@ func (c *Client) SendMessage(ms *proto.Message) (*proto.Empty, error) {
 	return &proto.Empty{}, nil
 }
 
-func (c *Client) StartConnection(port *proto.Port) (*proto.Empty error) {
-	nextClient, err := grpc.NewClient("localhost:" + port, grpc.WithInsecure())
+func (c *Client) StartConnection(port *proto.Port) {
+	nextClient, err := grpc.NewClient("localhost:"+strconv.Itoa(int(port.GetPort())), grpc.WithInsecure())
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	return &proto.Empty{}, nil
+	fmt.Println("Hello, World!")
+	fmt.Println(nextClient)
 }
 
 func StartClient(input int) {
 	fmt.Printf("Hello and welcome, %d!\n", ports[input])
 
 	if input != 0 {
-		conn, err := grpc.NewClient("localhost:"+strconv.Itoa(int(ports[input])), grpc.WithInsecure())
+		conn, err := grpc.NewClient("localhost:"+strconv.Itoa(int(ports[input+1])), grpc.WithInsecure())
 		if err != nil {
 			log.Fatalln(err)
 		}
 
 		nextClient := proto.NewElectionClient(conn)
-		port := &proto.Port{Port: ports[input - 1]}
-		nextClient.StartConnection(port)
+		port := &proto.Port{Port: ports[input-1]}
+		nextClient.StartConnection(context.Background(), port)
+	}
+
+	for {
+
 	}
 }
