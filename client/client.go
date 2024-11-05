@@ -9,6 +9,7 @@ import (
 	"log"
 	"net"
 	"strconv"
+	"time"
 )
 
 var ports = []int{5050, 5051, 5052}
@@ -28,10 +29,13 @@ func (c *server) SendMessage(ctx context.Context, ms *proto.Message) (*proto.Emp
 }
 
 func (s *server) client() {
-	err := startClient((s.ownPort + 1) % len(ports))
+	nextId := (s.ownPort + 1) % len(ports)
+	err := startClient(nextId)
 	for err != nil {
-		err = startClient((s.ownPort + 1) % len(ports))
+		err = startClient(nextId)
 	}
+	time.Sleep(2 * time.Second)
+	s.client()
 }
 
 func startClient(port int) error {
