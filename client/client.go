@@ -36,10 +36,12 @@ func (s *server) SendToken(ctx context.Context, ms *proto.Token) (*proto.Empty, 
 
 func (s *server) client() {
 	nextId := (s.ownPort + 1) % len(ports)
+
 	err := s.startClient(nextId)
 	for err != nil {
 		err = s.startClient(nextId)
 	}
+
 	time.Sleep(2 * time.Second)
 	s.client()
 }
@@ -81,27 +83,20 @@ func (s *server) StartServer(port int) {
 	if err != nil {
 		panic(err)
 	}
-
 }
 
-func (s *server) Server(port int) {
-	s.StartServer(port)
-}
-
-func Start(input int) {
-	s := &server{ownPort: input}
-	if input == 0 {
+func Start(port int) {
+	s := &server{ownPort: port}
+	if port == 0 {
 		s.hasToken = true
 	} else {
 		s.hasToken = false
 	}
 
 	go s.client()
-	go s.Server(input)
+	go s.StartServer(port)
 
-	fmt.Printf("Hello and welcome, %d!\n", input)
+	fmt.Printf("Hello and welcome, %d!\n", port)
 
-	for {
-
-	}
+	select {}
 }
