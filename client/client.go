@@ -2,7 +2,12 @@ package main
 
 import (
 	"fmt"
+	proto "handin4/grpc"
 )
+
+type client struct {
+	proto.UnimplementedChittyChatServer
+}
 
 func main() {
 

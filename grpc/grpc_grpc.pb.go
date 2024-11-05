@@ -19,101 +19,139 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	ChittyChat_GetStudents_FullMethodName = "/ChittyChat/GetStudents"
+	Byzantium_GetMessage_FullMethodName  = "/Byzantium/GetMessage"
+	Byzantium_SendMessage_FullMethodName = "/Byzantium/SendMessage"
 )
 
-// ChittyChatClient is the client API for ChittyChat service.
+// ByzantiumClient is the client API for Byzantium service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type ChittyChatClient interface {
-	GetStudents(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Students, error)
+type ByzantiumClient interface {
+	GetMessage(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Message, error)
+	SendMessage(ctx context.Context, in *Message, opts ...grpc.CallOption) (*Empty, error)
 }
 
-type chittyChatClient struct {
+type byzantiumClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewChittyChatClient(cc grpc.ClientConnInterface) ChittyChatClient {
-	return &chittyChatClient{cc}
+func NewByzantiumClient(cc grpc.ClientConnInterface) ByzantiumClient {
+	return &byzantiumClient{cc}
 }
 
-func (c *chittyChatClient) GetStudents(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Students, error) {
+func (c *byzantiumClient) GetMessage(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Message, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(Students)
-	err := c.cc.Invoke(ctx, ChittyChat_GetStudents_FullMethodName, in, out, cOpts...)
+	out := new(Message)
+	err := c.cc.Invoke(ctx, Byzantium_GetMessage_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// ChittyChatServer is the server API for ChittyChat service.
-// All implementations must embed UnimplementedChittyChatServer
-// for forward compatibility.
-type ChittyChatServer interface {
-	GetStudents(context.Context, *Empty) (*Students, error)
-	mustEmbedUnimplementedChittyChatServer()
+func (c *byzantiumClient) SendMessage(ctx context.Context, in *Message, opts ...grpc.CallOption) (*Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Empty)
+	err := c.cc.Invoke(ctx, Byzantium_SendMessage_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
-// UnimplementedChittyChatServer must be embedded to have
+// ByzantiumServer is the server API for Byzantium service.
+// All implementations must embed UnimplementedByzantiumServer
+// for forward compatibility.
+type ByzantiumServer interface {
+	GetMessage(context.Context, *Empty) (*Message, error)
+	SendMessage(context.Context, *Message) (*Empty, error)
+	mustEmbedUnimplementedByzantiumServer()
+}
+
+// UnimplementedByzantiumServer must be embedded to have
 // forward compatible implementations.
 //
 // NOTE: this should be embedded by value instead of pointer to avoid a nil
 // pointer dereference when methods are called.
-type UnimplementedChittyChatServer struct{}
+type UnimplementedByzantiumServer struct{}
 
-func (UnimplementedChittyChatServer) GetStudents(context.Context, *Empty) (*Students, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetStudents not implemented")
+func (UnimplementedByzantiumServer) GetMessage(context.Context, *Empty) (*Message, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetMessage not implemented")
 }
-func (UnimplementedChittyChatServer) mustEmbedUnimplementedChittyChatServer() {}
-func (UnimplementedChittyChatServer) testEmbeddedByValue()                    {}
+func (UnimplementedByzantiumServer) SendMessage(context.Context, *Message) (*Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SendMessage not implemented")
+}
+func (UnimplementedByzantiumServer) mustEmbedUnimplementedByzantiumServer() {}
+func (UnimplementedByzantiumServer) testEmbeddedByValue()                   {}
 
-// UnsafeChittyChatServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to ChittyChatServer will
+// UnsafeByzantiumServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to ByzantiumServer will
 // result in compilation errors.
-type UnsafeChittyChatServer interface {
-	mustEmbedUnimplementedChittyChatServer()
+type UnsafeByzantiumServer interface {
+	mustEmbedUnimplementedByzantiumServer()
 }
 
-func RegisterChittyChatServer(s grpc.ServiceRegistrar, srv ChittyChatServer) {
-	// If the following call pancis, it indicates UnimplementedChittyChatServer was
+func RegisterByzantiumServer(s grpc.ServiceRegistrar, srv ByzantiumServer) {
+	// If the following call pancis, it indicates UnimplementedByzantiumServer was
 	// embedded by pointer and is nil.  This will cause panics if an
 	// unimplemented method is ever invoked, so we test this at initialization
 	// time to prevent it from happening at runtime later due to I/O.
 	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
 		t.testEmbeddedByValue()
 	}
-	s.RegisterService(&ChittyChat_ServiceDesc, srv)
+	s.RegisterService(&Byzantium_ServiceDesc, srv)
 }
 
-func _ChittyChat_GetStudents_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Byzantium_GetMessage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ChittyChatServer).GetStudents(ctx, in)
+		return srv.(ByzantiumServer).GetMessage(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: ChittyChat_GetStudents_FullMethodName,
+		FullMethod: Byzantium_GetMessage_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ChittyChatServer).GetStudents(ctx, req.(*Empty))
+		return srv.(ByzantiumServer).GetMessage(ctx, req.(*Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// ChittyChat_ServiceDesc is the grpc.ServiceDesc for ChittyChat service.
+func _Byzantium_SendMessage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Message)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ByzantiumServer).SendMessage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Byzantium_SendMessage_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ByzantiumServer).SendMessage(ctx, req.(*Message))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// Byzantium_ServiceDesc is the grpc.ServiceDesc for Byzantium service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var ChittyChat_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "ChittyChat",
-	HandlerType: (*ChittyChatServer)(nil),
+var Byzantium_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "Byzantium",
+	HandlerType: (*ByzantiumServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "GetStudents",
-			Handler:    _ChittyChat_GetStudents_Handler,
+			MethodName: "GetMessage",
+			Handler:    _Byzantium_GetMessage_Handler,
+		},
+		{
+			MethodName: "SendMessage",
+			Handler:    _Byzantium_SendMessage_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

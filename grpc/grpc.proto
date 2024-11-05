@@ -1,12 +1,13 @@
 syntax = "proto3";
 option go_package = "grpc/proto";
 
-message Students {
-  repeated string students = 1;
+message Message {
+  string message = 1;
 }
 
 message Empty {}
 
-service ChittyChat {
-  rpc GetStudents (Empty) returns (Students) {};
+service Byzantium {
+  rpc GetMessage (Empty) returns (Message) {};
+  rpc SendMessage (Message) returns (Empty) {};
 }
