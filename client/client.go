@@ -15,41 +15,52 @@ import (
 var ports = []int{5050, 5051, 5052}
 
 type server struct {
-	proto.UnsafeByzantiumServer
-	ownPort int
+	proto.UnimplementedElectionServer
+	ownPort  int
+	hasToken bool
+	nr       int
 }
 
-func (c *server) GetMessage(ctx context.Context, e *proto.Empty) (*proto.Message, error) {
-	return &proto.Message{}, nil
-}
+func (s *server) SendToken(ctx context.Context, ms *proto.Token) (*proto.Empty, error) {
+	fmt.Println("got: ", ms.Boolean)
 
-func (c *server) SendMessage(ctx context.Context, ms *proto.Message) (*proto.Empty, error) {
-	fmt.Println(ms.Message)
+	if ms.Boolean {
+		s.hasToken = true
+		fmt.Println("DOING SOME COMPLICATED DATA MANIPULATION!")
+		s.nr++
+		time.Sleep(5 * time.Second)
+	}
+
 	return &proto.Empty{}, nil
 }
 
 func (s *server) client() {
 	nextId := (s.ownPort + 1) % len(ports)
-	err := startClient(nextId)
+	err := s.startClient(nextId)
 	for err != nil {
-		err = startClient(nextId)
+		err = s.startClient(nextId)
 	}
 	time.Sleep(2 * time.Second)
 	s.client()
 }
 
-func startClient(port int) error {
+func (s *server) startClient(port int) error {
 	conn, err := grpc.NewClient("localhost:"+strconv.Itoa(ports[port]), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return err
 	}
 
-	client := proto.NewByzantiumClient(conn)
-
-	_, err = client.SendMessage(context.Background(), &proto.Message{Message: "PEtAR"})
+	client := proto.NewElectionClient(conn)
+	//TODO: BOOLEANS DOESN'T CORRECTLY!
+	_, err = client.SendToken(context.Background(), &proto.Token{
+		Boolean: s.hasToken,
+		Data:    int32(s.nr),
+	})
 	if err != nil {
 		return err
 	}
+
+	s.hasToken = false
 
 	return nil
 }
@@ -64,7 +75,7 @@ func (s *server) StartServer(port int) {
 		panic(err)
 	}
 
-	proto.RegisterByzantiumServer(gRPCserver, s)
+	proto.RegisterElectionServer(gRPCserver, s)
 
 	err = gRPCserver.Serve(netListener)
 	if err != nil {
@@ -79,6 +90,11 @@ func (s *server) Server(port int) {
 
 func Start(input int) {
 	s := &server{ownPort: input}
+	if input == 0 {
+		s.hasToken = true
+	} else {
+		s.hasToken = false
+	}
 
 	go s.client()
 	go s.Server(input)

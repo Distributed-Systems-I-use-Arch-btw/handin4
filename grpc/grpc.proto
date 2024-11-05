@@ -1,16 +1,13 @@
 syntax = "proto3";
 option go_package = "grpc/proto";
 
-message Message {
-  string message = 1;
+message Token {
+  bool boolean = 1;
+  int32 data = 2;
 }
 
 message Empty {}
 
-service Byzantium {
-  rpc GetMessage (Empty) returns (Message) {};
-  rpc SendMessage (Message) returns (Empty) {};
+service Election {
+  rpc SendToken (Token) returns (Empty) {};
 }
-
-//visf@itu.dk
-//NEEDS TO BE SECRET; DONT SHARE WITH ANYONE!!!!!

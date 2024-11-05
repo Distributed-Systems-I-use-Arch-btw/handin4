@@ -19,139 +19,101 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Byzantium_GetMessage_FullMethodName  = "/Byzantium/GetMessage"
-	Byzantium_SendMessage_FullMethodName = "/Byzantium/SendMessage"
+	Election_SendToken_FullMethodName = "/Election/SendToken"
 )
 
-// ByzantiumClient is the client API for Byzantium service.
+// ElectionClient is the client API for Election service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type ByzantiumClient interface {
-	GetMessage(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Message, error)
-	SendMessage(ctx context.Context, in *Message, opts ...grpc.CallOption) (*Empty, error)
+type ElectionClient interface {
+	SendToken(ctx context.Context, in *Token, opts ...grpc.CallOption) (*Empty, error)
 }
 
-type byzantiumClient struct {
+type electionClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewByzantiumClient(cc grpc.ClientConnInterface) ByzantiumClient {
-	return &byzantiumClient{cc}
+func NewElectionClient(cc grpc.ClientConnInterface) ElectionClient {
+	return &electionClient{cc}
 }
 
-func (c *byzantiumClient) GetMessage(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Message, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(Message)
-	err := c.cc.Invoke(ctx, Byzantium_GetMessage_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *byzantiumClient) SendMessage(ctx context.Context, in *Message, opts ...grpc.CallOption) (*Empty, error) {
+func (c *electionClient) SendToken(ctx context.Context, in *Token, opts ...grpc.CallOption) (*Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Empty)
-	err := c.cc.Invoke(ctx, Byzantium_SendMessage_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, Election_SendToken_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// ByzantiumServer is the server API for Byzantium service.
-// All implementations must embed UnimplementedByzantiumServer
+// ElectionServer is the server API for Election service.
+// All implementations must embed UnimplementedElectionServer
 // for forward compatibility.
-type ByzantiumServer interface {
-	GetMessage(context.Context, *Empty) (*Message, error)
-	SendMessage(context.Context, *Message) (*Empty, error)
-	mustEmbedUnimplementedByzantiumServer()
+type ElectionServer interface {
+	SendToken(context.Context, *Token) (*Empty, error)
+	mustEmbedUnimplementedElectionServer()
 }
 
-// UnimplementedByzantiumServer must be embedded to have
+// UnimplementedElectionServer must be embedded to have
 // forward compatible implementations.
 //
 // NOTE: this should be embedded by value instead of pointer to avoid a nil
 // pointer dereference when methods are called.
-type UnimplementedByzantiumServer struct{}
+type UnimplementedElectionServer struct{}
 
-func (UnimplementedByzantiumServer) GetMessage(context.Context, *Empty) (*Message, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetMessage not implemented")
+func (UnimplementedElectionServer) SendToken(context.Context, *Token) (*Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SendToken not implemented")
 }
-func (UnimplementedByzantiumServer) SendMessage(context.Context, *Message) (*Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SendMessage not implemented")
-}
-func (UnimplementedByzantiumServer) mustEmbedUnimplementedByzantiumServer() {}
-func (UnimplementedByzantiumServer) testEmbeddedByValue()                   {}
+func (UnimplementedElectionServer) mustEmbedUnimplementedElectionServer() {}
+func (UnimplementedElectionServer) testEmbeddedByValue()                  {}
 
-// UnsafeByzantiumServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to ByzantiumServer will
+// UnsafeElectionServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to ElectionServer will
 // result in compilation errors.
-type UnsafeByzantiumServer interface {
-	mustEmbedUnimplementedByzantiumServer()
+type UnsafeElectionServer interface {
+	mustEmbedUnimplementedElectionServer()
 }
 
-func RegisterByzantiumServer(s grpc.ServiceRegistrar, srv ByzantiumServer) {
-	// If the following call pancis, it indicates UnimplementedByzantiumServer was
+func RegisterElectionServer(s grpc.ServiceRegistrar, srv ElectionServer) {
+	// If the following call pancis, it indicates UnimplementedElectionServer was
 	// embedded by pointer and is nil.  This will cause panics if an
 	// unimplemented method is ever invoked, so we test this at initialization
 	// time to prevent it from happening at runtime later due to I/O.
 	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
 		t.testEmbeddedByValue()
 	}
-	s.RegisterService(&Byzantium_ServiceDesc, srv)
+	s.RegisterService(&Election_ServiceDesc, srv)
 }
 
-func _Byzantium_GetMessage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Empty)
+func _Election_SendToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Token)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ByzantiumServer).GetMessage(ctx, in)
+		return srv.(ElectionServer).SendToken(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Byzantium_GetMessage_FullMethodName,
+		FullMethod: Election_SendToken_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ByzantiumServer).GetMessage(ctx, req.(*Empty))
+		return srv.(ElectionServer).SendToken(ctx, req.(*Token))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Byzantium_SendMessage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Message)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ByzantiumServer).SendMessage(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Byzantium_SendMessage_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ByzantiumServer).SendMessage(ctx, req.(*Message))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-// Byzantium_ServiceDesc is the grpc.ServiceDesc for Byzantium service.
+// Election_ServiceDesc is the grpc.ServiceDesc for Election service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var Byzantium_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "Byzantium",
-	HandlerType: (*ByzantiumServer)(nil),
+var Election_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "Election",
+	HandlerType: (*ElectionServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "GetMessage",
-			Handler:    _Byzantium_GetMessage_Handler,
-		},
-		{
-			MethodName: "SendMessage",
-			Handler:    _Byzantium_SendMessage_Handler,
+			MethodName: "SendToken",
+			Handler:    _Election_SendToken_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
