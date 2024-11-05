@@ -8,7 +8,7 @@ import (
 	"strconv"
 )
 
-var ports = []int{5050, 5051, 5052, 5053, 5054, 5055, 5056, 5057}
+var ports = []int32{5050, 5051, 5052, 5053, 5054, 5055, 5056, 5057}
 
 type Client struct {
 	proto.UnimplementedElectionServer
@@ -35,12 +35,13 @@ func StartClient(input int) {
 	fmt.Printf("Hello and welcome, %d!\n", ports[input])
 
 	if input != 0 {
-		conn, err := grpc.NewClient("localhost:"+strconv.Itoa(ports[input]), grpc.WithInsecure())
+		conn, err := grpc.NewClient("localhost:"+strconv.Itoa(int(ports[input])), grpc.WithInsecure())
 		if err != nil {
 			log.Fatalln(err)
 		}
 
 		nextClient := proto.NewElectionClient(conn)
-		nextClient.StartConnection(ports[input])
+		port := &proto.Port{Port: ports[input - 1]}
+		nextClient.StartConnection(port)
 	}
 }

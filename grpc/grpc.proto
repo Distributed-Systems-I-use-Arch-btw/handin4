@@ -2,7 +2,7 @@ syntax = "proto3";
 option go_package = "grpc/proto";
 
 message Port {
-  int32 Port = 1;
+  int32 port = 2;
 }
 
 message Message {
@@ -14,4 +14,5 @@ message Empty {}
 service Election {
   rpc GetMessage (Empty) returns (Message) {};
   rpc SendMessage (Message) returns (Empty) {};
+  rpc StartConnection (Port) returns (Empty) {};
 }

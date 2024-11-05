@@ -4,7 +4,7 @@
 // - protoc             v3.21.12
 // source: grpc/grpc.proto
 
-package grpc
+package proto
 
 import (
 	context "context"
@@ -19,8 +19,9 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Election_GetMessage_FullMethodName  = "/Election/GetMessage"
-	Election_SendMessage_FullMethodName = "/Election/SendMessage"
+	Election_GetMessage_FullMethodName      = "/Election/GetMessage"
+	Election_SendMessage_FullMethodName     = "/Election/SendMessage"
+	Election_StartConnection_FullMethodName = "/Election/StartConnection"
 )
 
 // ElectionClient is the client API for Election service.
@@ -29,6 +30,7 @@ const (
 type ElectionClient interface {
 	GetMessage(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Message, error)
 	SendMessage(ctx context.Context, in *Message, opts ...grpc.CallOption) (*Empty, error)
+	StartConnection(ctx context.Context, in *Port, opts ...grpc.CallOption) (*Empty, error)
 }
 
 type electionClient struct {
@@ -59,12 +61,23 @@ func (c *electionClient) SendMessage(ctx context.Context, in *Message, opts ...g
 	return out, nil
 }
 
+func (c *electionClient) StartConnection(ctx context.Context, in *Port, opts ...grpc.CallOption) (*Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Empty)
+	err := c.cc.Invoke(ctx, Election_StartConnection_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ElectionServer is the server API for Election service.
 // All implementations must embed UnimplementedElectionServer
 // for forward compatibility.
 type ElectionServer interface {
 	GetMessage(context.Context, *Empty) (*Message, error)
 	SendMessage(context.Context, *Message) (*Empty, error)
+	StartConnection(context.Context, *Port) (*Empty, error)
 	mustEmbedUnimplementedElectionServer()
 }
 
@@ -80,6 +93,9 @@ func (UnimplementedElectionServer) GetMessage(context.Context, *Empty) (*Message
 }
 func (UnimplementedElectionServer) SendMessage(context.Context, *Message) (*Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SendMessage not implemented")
+}
+func (UnimplementedElectionServer) StartConnection(context.Context, *Port) (*Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StartConnection not implemented")
 }
 func (UnimplementedElectionServer) mustEmbedUnimplementedElectionServer() {}
 func (UnimplementedElectionServer) testEmbeddedByValue()                  {}
@@ -138,6 +154,24 @@ func _Election_SendMessage_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Election_StartConnection_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Port)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ElectionServer).StartConnection(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Election_StartConnection_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ElectionServer).StartConnection(ctx, req.(*Port))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Election_ServiceDesc is the grpc.ServiceDesc for Election service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -152,6 +186,10 @@ var Election_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SendMessage",
 			Handler:    _Election_SendMessage_Handler,
+		},
+		{
+			MethodName: "StartConnection",
+			Handler:    _Election_StartConnection_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
