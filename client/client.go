@@ -6,48 +6,32 @@ import (
 	"google.golang.org/grpc"
 	proto "handin4/grpc"
 	"log"
-	"strconv"
+	"net"
 )
 
-var ports = []int32{5050, 5051, 5052, 5053, 5054, 5055, 5056, 5057}
-
-type Client struct {
+type server struct {
 	proto.UnimplementedElectionServer
 }
 
-func (c *Client) GetMessage(e *proto.Empty) (*proto.Message, error) {
-	return &proto.Message{}, nil
-}
+func (s *server) SendToken(ctx context.Context, token *proto.Token) (*proto.Empty, error) {
+	fmt.Println("Do i have token? ", token.HasToken)
 
-func (c *Client) SendMessage(ms *proto.Message) (*proto.Empty, error) {
 	return &proto.Empty{}, nil
 }
 
-func (c *Client) StartConnection(port *proto.Port) {
-	nextClient, err := grpc.NewClient("localhost:"+strconv.Itoa(int(port.GetPort())), grpc.WithInsecure())
+func StartClient(myPort int, nextPort int) {
+	fmt.Printf("Client running on port %d, next port is %d\n", myPort, nextPort)
+
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", myPort))
 	if err != nil {
-		log.Fatalln(err)
+		log.Fatalf("Failed to listen: %v", err)
 	}
 
-	fmt.Println("Hello, World!")
-	fmt.Println(nextClient)
-}
+	s := grpc.NewServer()
+	proto.RegisterElectionServer(s, &server{})
 
-func StartClient(input int) {
-	fmt.Printf("Hello and welcome, %d!\n", ports[input])
-
-	if input != 0 {
-		conn, err := grpc.NewClient("localhost:"+strconv.Itoa(int(ports[input+1])), grpc.WithInsecure())
-		if err != nil {
-			log.Fatalln(err)
-		}
-
-		nextClient := proto.NewElectionClient(conn)
-		port := &proto.Port{Port: ports[input-1]}
-		nextClient.StartConnection(context.Background(), port)
-	}
-
-	for {
-
+	fmt.Printf("gRPC server listening on %v\n", myPort)
+	if err := s.Serve(lis); err != nil {
+		log.Fatalf("Failed to serve: %v", err)
 	}
 }

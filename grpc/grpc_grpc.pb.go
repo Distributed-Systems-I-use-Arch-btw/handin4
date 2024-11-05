@@ -19,18 +19,14 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Election_GetMessage_FullMethodName      = "/Election/GetMessage"
-	Election_SendMessage_FullMethodName     = "/Election/SendMessage"
-	Election_StartConnection_FullMethodName = "/Election/StartConnection"
+	Election_SendToken_FullMethodName = "/Election/SendToken"
 )
 
 // ElectionClient is the client API for Election service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ElectionClient interface {
-	GetMessage(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Message, error)
-	SendMessage(ctx context.Context, in *Message, opts ...grpc.CallOption) (*Empty, error)
-	StartConnection(ctx context.Context, in *Port, opts ...grpc.CallOption) (*Empty, error)
+	SendToken(ctx context.Context, in *Token, opts ...grpc.CallOption) (*Empty, error)
 }
 
 type electionClient struct {
@@ -41,30 +37,10 @@ func NewElectionClient(cc grpc.ClientConnInterface) ElectionClient {
 	return &electionClient{cc}
 }
 
-func (c *electionClient) GetMessage(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Message, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(Message)
-	err := c.cc.Invoke(ctx, Election_GetMessage_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *electionClient) SendMessage(ctx context.Context, in *Message, opts ...grpc.CallOption) (*Empty, error) {
+func (c *electionClient) SendToken(ctx context.Context, in *Token, opts ...grpc.CallOption) (*Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Empty)
-	err := c.cc.Invoke(ctx, Election_SendMessage_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *electionClient) StartConnection(ctx context.Context, in *Port, opts ...grpc.CallOption) (*Empty, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(Empty)
-	err := c.cc.Invoke(ctx, Election_StartConnection_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, Election_SendToken_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -75,9 +51,7 @@ func (c *electionClient) StartConnection(ctx context.Context, in *Port, opts ...
 // All implementations must embed UnimplementedElectionServer
 // for forward compatibility.
 type ElectionServer interface {
-	GetMessage(context.Context, *Empty) (*Message, error)
-	SendMessage(context.Context, *Message) (*Empty, error)
-	StartConnection(context.Context, *Port) (*Empty, error)
+	SendToken(context.Context, *Token) (*Empty, error)
 	mustEmbedUnimplementedElectionServer()
 }
 
@@ -88,14 +62,8 @@ type ElectionServer interface {
 // pointer dereference when methods are called.
 type UnimplementedElectionServer struct{}
 
-func (UnimplementedElectionServer) GetMessage(context.Context, *Empty) (*Message, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetMessage not implemented")
-}
-func (UnimplementedElectionServer) SendMessage(context.Context, *Message) (*Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SendMessage not implemented")
-}
-func (UnimplementedElectionServer) StartConnection(context.Context, *Port) (*Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method StartConnection not implemented")
+func (UnimplementedElectionServer) SendToken(context.Context, *Token) (*Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SendToken not implemented")
 }
 func (UnimplementedElectionServer) mustEmbedUnimplementedElectionServer() {}
 func (UnimplementedElectionServer) testEmbeddedByValue()                  {}
@@ -118,56 +86,20 @@ func RegisterElectionServer(s grpc.ServiceRegistrar, srv ElectionServer) {
 	s.RegisterService(&Election_ServiceDesc, srv)
 }
 
-func _Election_GetMessage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Empty)
+func _Election_SendToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Token)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ElectionServer).GetMessage(ctx, in)
+		return srv.(ElectionServer).SendToken(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Election_GetMessage_FullMethodName,
+		FullMethod: Election_SendToken_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ElectionServer).GetMessage(ctx, req.(*Empty))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Election_SendMessage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Message)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ElectionServer).SendMessage(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Election_SendMessage_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ElectionServer).SendMessage(ctx, req.(*Message))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Election_StartConnection_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Port)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ElectionServer).StartConnection(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Election_StartConnection_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ElectionServer).StartConnection(ctx, req.(*Port))
+		return srv.(ElectionServer).SendToken(ctx, req.(*Token))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -180,16 +112,8 @@ var Election_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*ElectionServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "GetMessage",
-			Handler:    _Election_GetMessage_Handler,
-		},
-		{
-			MethodName: "SendMessage",
-			Handler:    _Election_SendMessage_Handler,
-		},
-		{
-			MethodName: "StartConnection",
-			Handler:    _Election_StartConnection_Handler,
+			MethodName: "SendToken",
+			Handler:    _Election_SendToken_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
