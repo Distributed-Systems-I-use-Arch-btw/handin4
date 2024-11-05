@@ -1,16 +1,17 @@
 syntax = "proto3";
 option go_package = "grpc/proto";
 
+message Port {
+  int32 Port = 1;
+}
+
 message Message {
-  string message = 1;
+  string content = 1;
 }
 
 message Empty {}
 
-service Byzantium {
+service Election {
   rpc GetMessage (Empty) returns (Message) {};
   rpc SendMessage (Message) returns (Empty) {};
 }
-
-//visf@itu.dk
-//NEEDS TO BE SECRET; DONT SHARE WITH ANYONE!!!!!
