@@ -7,19 +7,48 @@ import (
 	proto "handin4/grpc"
 	"log"
 	"net"
+	"time"
 )
 
 type server struct {
 	proto.UnimplementedElectionServer
 }
 
+var nextPort int
+var client proto.ElectionClient
+
 func (s *server) SendToken(ctx context.Context, token *proto.Token) (*proto.Empty, error) {
 	fmt.Println("Do i have token? ", token.HasToken)
+	fmt.Println("Doing task...")
+
+	time.Sleep(2 * time.Second)
+
+	fmt.Println("Done with task")
+
+	if client != nil {
+		fmt.Println("Sending token to client on port", nextPort)
+
+		_, err := client.SendToken(ctx, token)
+		if err != nil {
+			log.Fatalf("Failed to send token: %v", err)
+		}
+	} else {
+		findclient()
+
+		fmt.Println("Sending token to client on port", nextPort)
+
+		_, err := s.SendToken(ctx, token)
+		if err != nil {
+			return nil, err
+		}
+	}
 
 	return &proto.Empty{}, nil
 }
 
-func StartClient(myPort int, nextPort int) {
+func StartClient(myPort int, _nextPort int) {
+	nextPort = _nextPort
+
 	fmt.Printf("Client running on port %d, next port is %d\n", myPort, nextPort)
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", myPort))
@@ -30,7 +59,9 @@ func StartClient(myPort int, nextPort int) {
 	s := grpc.NewServer()
 	proto.RegisterElectionServer(s, &server{})
 
-	go findclient(myPort, nextPort)
+	if myPort == 5050 {
+		go findclient()
+	}
 
 	fmt.Printf("gRPC server listening on %v\n", myPort)
 	if err := s.Serve(lis); err != nil {
@@ -38,7 +69,7 @@ func StartClient(myPort int, nextPort int) {
 	}
 }
 
-func findclient(myPort int, nextPort int) {
+func findclient() {
 	fmt.Println("Looking for client")
 
 	var conn *grpc.ClientConn
@@ -52,14 +83,12 @@ func findclient(myPort int, nextPort int) {
 		}
 	}
 
-	client := proto.NewElectionClient(conn)
+	client = proto.NewElectionClient(conn)
 
-	if myPort == 5050 {
-		_, err = client.SendToken(context.Background(), &proto.Token{HasToken: true})
-		if err != nil {
-			log.Fatalf("Failed to send token: %v", err)
-		}
-
-		fmt.Println("Token sent to client on port", nextPort)
+	_, err = client.SendToken(context.Background(), &proto.Token{HasToken: true})
+	if err != nil {
+		log.Fatalf("Failed to send token: %v", err)
 	}
+
+	fmt.Println("Token sent to client on port", nextPort)
 }
