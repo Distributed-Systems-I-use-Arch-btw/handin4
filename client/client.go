@@ -11,10 +11,11 @@ import (
 	"strconv"
 )
 
-var ports = []int{5050, 5051, 5052, 5053, 5054, 5055, 5056, 5057}
+var ports = []int{5050, 5051, 5052}
 
 type server struct {
 	proto.UnsafeByzantiumServer
+	ownPort int
 }
 
 func (c *server) GetMessage(ctx context.Context, e *proto.Empty) (*proto.Message, error) {
@@ -26,15 +27,27 @@ func (c *server) SendMessage(ctx context.Context, ms *proto.Message) (*proto.Emp
 	return &proto.Empty{}, nil
 }
 
-func client() {
-	conn, err := grpc.NewClient("localhost:5050", grpc.WithTransportCredentials(insecure.NewCredentials()))
+func (s *server) client() {
+	err := startClient((s.ownPort + 1) % len(ports))
+	for err != nil {
+		err = startClient((s.ownPort + 1) % len(ports))
+	}
+}
+
+func startClient(port int) error {
+	conn, err := grpc.NewClient("localhost:"+strconv.Itoa(ports[port]), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	client := proto.NewByzantiumClient(conn)
 
-	_, _ = client.SendMessage(context.Background(), &proto.Message{Message: "PEtAR"})
+	_, err = client.SendMessage(context.Background(), &proto.Message{Message: "PEtAR"})
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (s *server) StartServer(port int) {
@@ -42,7 +55,7 @@ func (s *server) StartServer(port int) {
 
 	log.Println("Server started")
 
-	netListener, err := net.Listen("tcp", ":"+strconv.Itoa(port))
+	netListener, err := net.Listen("tcp", ":"+strconv.Itoa(ports[port]))
 	if err != nil {
 		panic(err)
 	}
@@ -60,14 +73,15 @@ func (s *server) Server(port int) {
 	s.StartServer(port)
 }
 
-func StartClient(input int) {
-	s := &server{}
+func Start(input int) {
+	s := &server{ownPort: input}
 
-	if input == 5051 {
-		go client()
-	}
-
-	s.Server(input)
+	go s.client()
+	go s.Server(input)
 
 	fmt.Printf("Hello and welcome, %d!\n", input)
+
+	for {
+
+	}
 }

@@ -7,8 +7,6 @@ import (
 	"strconv"
 )
 
-var ports = []int{5050, 5051, 5052, 5053, 5054, 5055, 5056, 5057}
-
 func main() {
 	args := os.Args
 
@@ -22,9 +20,10 @@ func main() {
 		fmt.Println("Not an integer")
 		os.Exit(1)
 	}
-	if nr > len(ports) || nr < 0 {
-		fmt.Printf("Out of max range of &d\n", len(ports))
+	if nr > 3 || nr < 0 {
+		fmt.Printf("Out of max range of &d\n", 3)
 		os.Exit(1)
 	}
-	start.StartClient(ports[nr])
+	send, _ := strconv.Atoi(args[1])
+	start.Start(send)
 }
