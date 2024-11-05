@@ -22,7 +22,7 @@ func main() {
 		fmt.Println("Not an integer")
 		os.Exit(1)
 	}
-	if nr > len(ports) || nr < 1 {
+	if nr > len(ports) || nr < 0 {
 		fmt.Printf("Out of max range of &d\n", len(ports))
 		os.Exit(1)
 	}
