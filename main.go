@@ -31,7 +31,7 @@ func main() {
 }
 
 func checkPortAvailability(port int) bool {
-	_, err := net.DialTimeout("tcp", fmt.Sprintf("localhost:%d", port), time.Second*3)
+	_, err := net.DialTimeout("tcp", fmt.Sprintf("localhost:%d", port), time.Second*2)
 	if err != nil {
 		return true
 	}
