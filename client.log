@@ -1,0 +1,119 @@
+2024/11/06 13:26:40 Client running on port 5050, next port is 5051
+2024/11/06 13:26:40 gRPC server listening on 5050
+2024/11/06 13:26:40 Looking for client
+2024/11/06 13:26:40 Port 5050 wants access
+2024/11/06 13:26:41 Client running on port 5051, next port is 5052
+2024/11/06 13:26:41 gRPC server listening on 5051
+2024/11/06 13:26:41 Connected to client on port 5051
+2024/11/06 13:26:41 I, 5051, have the token!
+2024/11/06 13:26:41 Looking for client
+2024/11/06 13:26:43 Client running on port 5052, next port is 5053
+2024/11/06 13:26:43 gRPC server listening on 5052
+2024/11/06 13:26:44 Connected to client on port 5052
+2024/11/06 13:26:44 I, 5052, have the token!
+2024/11/06 13:26:44 Looking for client
+2024/11/06 13:26:45 Port 5052 wants access
+2024/11/06 13:26:46 Client running on port 5053, next port is 5054
+2024/11/06 13:26:46 gRPC server listening on 5053
+2024/11/06 13:26:46 Connected to client on port 5053
+2024/11/06 13:26:46 I, 5053, have the token!
+2024/11/06 13:26:46 Looking for client
+2024/11/06 13:26:47 Client running on port 5054, next port is 5055
+2024/11/06 13:26:47 gRPC server listening on 5054
+2024/11/06 13:26:48 Connected to client on port 5054
+2024/11/06 13:26:48 I, 5054, have the token!
+2024/11/06 13:26:48 Looking for client
+2024/11/06 13:26:49 Client running on port 5055, next port is 5056
+2024/11/06 13:26:49 gRPC server listening on 5055
+2024/11/06 13:26:50 Connected to client on port 5055
+2024/11/06 13:26:50 I, 5055, have the token!
+2024/11/06 13:26:50 Looking for client
+2024/11/06 13:26:51 Client running on port 5056, next port is 5057
+2024/11/06 13:26:51 gRPC server listening on 5056
+2024/11/06 13:26:51 Port 5056 wants access
+2024/11/06 13:26:51 Connected to client on port 5056
+2024/11/06 13:26:51 I, 5056, have the token!
+2024/11/06 13:26:51 Doing task...
+2024/11/06 13:26:53 Port 5054 wants access
+2024/11/06 13:26:53 Done with task
+2024/11/06 13:26:53 Looking for client
+2024/11/06 13:26:54 Port 5051 wants access
+2024/11/06 13:26:54 Client running on port 5057, next port is 5050
+2024/11/06 13:26:54 gRPC server listening on 5057
+2024/11/06 13:26:54 Connected to client on port 5057
+2024/11/06 13:26:54 I, 5057, have the token!
+2024/11/06 13:26:54 Looking for client
+2024/11/06 13:26:54 Connected to client on port 5050
+2024/11/06 13:26:54 I, 5050, have the token!
+2024/11/06 13:26:54 Doing task...
+2024/11/06 13:26:56 Done with task
+2024/11/06 13:26:56 Sending token to client on port 5051
+2024/11/06 13:26:56 I, 5051, have the token!
+2024/11/06 13:26:57 Doing task...
+2024/11/06 13:26:57 Port 5053 wants access
+2024/11/06 13:26:59 Done with task
+2024/11/06 13:26:59 Sending token to client on port 5052
+2024/11/06 13:26:59 I, 5052, have the token!
+2024/11/06 13:26:59 Doing task...
+2024/11/06 13:27:01 Done with task
+2024/11/06 13:27:01 Sending token to client on port 5053
+2024/11/06 13:27:01 I, 5053, have the token!
+2024/11/06 13:27:01 Doing task...
+2024/11/06 13:27:03 Done with task
+2024/11/06 13:27:03 Sending token to client on port 5054
+2024/11/06 13:27:03 I, 5054, have the token!
+2024/11/06 13:27:03 Doing task...
+2024/11/06 13:27:03 Port 5053 wants access
+2024/11/06 13:27:03 Port 5055 wants access
+2024/11/06 13:27:04 Port 5051 wants access
+2024/11/06 13:27:05 Done with task
+2024/11/06 13:27:05 Sending token to client on port 5055
+2024/11/06 13:27:05 I, 5055, have the token!
+2024/11/06 13:27:05 Doing task...
+2024/11/06 13:27:06 Port 5052 wants access
+2024/11/06 13:27:07 Done with task
+2024/11/06 13:27:07 Sending token to client on port 5056
+2024/11/06 13:27:07 I, 5056, have the token!
+2024/11/06 13:27:07 Sending token to client on port 5057
+2024/11/06 13:27:07 I, 5057, have the token!
+2024/11/06 13:27:07 Sending token to client on port 5050
+2024/11/06 13:27:07 I, 5050, have the token!
+2024/11/06 13:27:07 Sending token to client on port 5051
+2024/11/06 13:27:07 I, 5051, have the token!
+2024/11/06 13:27:07 Doing task...
+2024/11/06 13:27:07 Port 5054 wants access
+2024/11/06 13:27:07 Port 5055 wants access
+2024/11/06 13:27:09 Done with task
+2024/11/06 13:27:09 Sending token to client on port 5052
+2024/11/06 13:27:09 I, 5052, have the token!
+2024/11/06 13:27:09 Doing task...
+2024/11/06 13:27:11 Done with task
+2024/11/06 13:27:11 Sending token to client on port 5053
+2024/11/06 13:27:11 I, 5053, have the token!
+2024/11/06 13:27:11 Doing task...
+2024/11/06 13:27:11 Port 5056 wants access
+2024/11/06 13:27:11 Port 5050 wants access
+2024/11/06 13:27:12 Port 5057 wants access
+2024/11/06 13:27:13 Done with task
+2024/11/06 13:27:13 Sending token to client on port 5054
+2024/11/06 13:27:13 I, 5054, have the token!
+2024/11/06 13:27:13 Doing task...
+2024/11/06 13:27:15 Done with task
+2024/11/06 13:27:15 Sending token to client on port 5055
+2024/11/06 13:27:15 I, 5055, have the token!
+2024/11/06 13:27:15 Doing task...
+2024/11/06 13:27:17 Done with task
+2024/11/06 13:27:17 Sending token to client on port 5056
+2024/11/06 13:27:17 I, 5056, have the token!
+2024/11/06 13:27:17 Doing task...
+2024/11/06 13:27:17 Port 5054 wants access
+2024/11/06 13:27:17 Port 5055 wants access
+2024/11/06 13:27:19 Done with task
+2024/11/06 13:27:19 Sending token to client on port 5057
+2024/11/06 13:27:19 I, 5057, have the token!
+2024/11/06 13:27:19 Doing task...
+2024/11/06 13:27:20 Port 5052 wants access
+2024/11/06 13:27:20 Done with task
+2024/11/06 13:27:20 Sending token to client on port 5050
+2024/11/06 13:27:20 I, 5050, have the token!
+2024/11/06 13:27:20 Doing task...
