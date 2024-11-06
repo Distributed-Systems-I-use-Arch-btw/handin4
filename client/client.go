@@ -6,6 +6,7 @@ import (
 	"google.golang.org/grpc"
 	proto "handin4/grpc"
 	"log"
+	"math/rand"
 	"net"
 	"time"
 )
@@ -16,14 +17,24 @@ type server struct {
 
 var nextPort int
 var client proto.ElectionClient
+var wantsAccess bool
 
-func (s *server) SendToken(ctx context.Context, token *proto.Token) (*proto.Empty, error) {
-	fmt.Println("Do i have token? ", token.HasToken)
+func AccessCriticalSection() {
 	fmt.Println("Doing task...")
 
 	time.Sleep(2 * time.Second)
 
 	fmt.Println("Done with task")
+
+	wantsAccess = false
+}
+
+func (s *server) SendToken(ctx context.Context, token *proto.Token) (*proto.Empty, error) {
+	fmt.Println("Do i have token? ", token.HasToken)
+
+	if wantsAccess {
+		AccessCriticalSection()
+	}
 
 	if client != nil {
 		fmt.Println("Sending token to client on port", nextPort)
@@ -48,6 +59,7 @@ func (s *server) SendToken(ctx context.Context, token *proto.Token) (*proto.Empt
 
 func StartClient(myPort int, _nextPort int) {
 	nextPort = _nextPort
+	wantsAccess = false
 
 	fmt.Printf("Client running on port %d, next port is %d\n", myPort, nextPort)
 
@@ -62,6 +74,8 @@ func StartClient(myPort int, _nextPort int) {
 	if myPort == 5050 {
 		go findclient()
 	}
+
+	go DoIWantAccess(myPort)
 
 	fmt.Printf("gRPC server listening on %v\n", myPort)
 	if err := s.Serve(lis); err != nil {
@@ -91,4 +105,16 @@ func findclient() {
 	}
 
 	fmt.Println("Token sent to client on port", nextPort)
+}
+
+func DoIWantAccess(myPort int) {
+	if rand.Intn(5) == 1 && !wantsAccess {
+		wantsAccess = true
+
+		fmt.Printf("Port %d wants access\n", myPort)
+	}
+
+	time.Sleep(2 * time.Second)
+
+	DoIWantAccess(myPort)
 }
