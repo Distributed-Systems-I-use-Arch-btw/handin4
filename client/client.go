@@ -13,40 +13,40 @@ import (
 
 type server struct {
 	proto.UnimplementedElectionServer
+	myPort      int
+	nextPort    int
+	client      proto.ElectionClient
+	wantsAccess bool
 }
 
-var nextPort int
-var client proto.ElectionClient
-var wantsAccess bool
-
-func AccessCriticalSection() {
+func (s *server) AccessCriticalSection() {
 	fmt.Println("Doing task...")
 
 	time.Sleep(2 * time.Second)
 
 	fmt.Println("Done with task")
 
-	wantsAccess = false
+	s.wantsAccess = false
 }
 
 func (s *server) SendToken(ctx context.Context, token *proto.Token) (*proto.Empty, error) {
-	fmt.Println("Do i have token? ", token.HasToken)
+	fmt.Printf("I, %d, have the token!\n", s.myPort)
 
-	if wantsAccess {
-		AccessCriticalSection()
+	if s.wantsAccess {
+		s.AccessCriticalSection()
 	}
 
-	if client != nil {
-		fmt.Println("Sending token to client on port", nextPort)
+	if s.client != nil {
+		fmt.Println("Sending token to client on port", s.nextPort)
 
-		_, err := client.SendToken(ctx, token)
+		_, err := s.client.SendToken(ctx, token)
 		if err != nil {
 			log.Fatalf("Failed to send token: %v", err)
 		}
 	} else {
-		findclient()
+		s.Findclient()
 
-		fmt.Println("Sending token to client on port", nextPort)
+		fmt.Println("Sending token to client on port", s.nextPort)
 
 		_, err := s.SendToken(ctx, token)
 		if err != nil {
@@ -57,10 +57,7 @@ func (s *server) SendToken(ctx context.Context, token *proto.Token) (*proto.Empt
 	return &proto.Empty{}, nil
 }
 
-func StartClient(myPort int, _nextPort int) {
-	nextPort = _nextPort
-	wantsAccess = false
-
+func StartClient(myPort int, nextPort int) {
 	fmt.Printf("Client running on port %d, next port is %d\n", myPort, nextPort)
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", myPort))
@@ -68,53 +65,60 @@ func StartClient(myPort int, _nextPort int) {
 		log.Fatalf("Failed to listen: %v", err)
 	}
 
-	s := grpc.NewServer()
-	proto.RegisterElectionServer(s, &server{})
-
-	if myPort == 5050 {
-		go findclient()
+	s := &server{
+		myPort:      myPort,
+		nextPort:    nextPort,
+		client:      nil,
+		wantsAccess: false,
 	}
 
-	go DoIWantAccess(myPort)
+	g := grpc.NewServer()
+	proto.RegisterElectionServer(g, s)
+
+	if myPort == 5050 {
+		go s.Findclient()
+	}
+
+	go s.DoIWantAccess()
 
 	fmt.Printf("gRPC server listening on %v\n", myPort)
-	if err := s.Serve(lis); err != nil {
+	if err := g.Serve(lis); err != nil {
 		log.Fatalf("Failed to serve: %v", err)
 	}
 }
 
-func findclient() {
+func (s *server) Findclient() {
 	fmt.Println("Looking for client")
 
 	var conn *grpc.ClientConn
 	var err error
 
 	for {
-		conn, err = grpc.Dial(fmt.Sprintf("localhost:%d", nextPort), grpc.WithInsecure(), grpc.WithBlock())
+		conn, err = grpc.Dial(fmt.Sprintf("localhost:%d", s.nextPort), grpc.WithInsecure(), grpc.WithBlock())
 		if err == nil {
-			fmt.Println("Connected to client on port", nextPort)
+			fmt.Println("Connected to client on port", s.nextPort)
 			break
 		}
 	}
 
-	client = proto.NewElectionClient(conn)
+	s.client = proto.NewElectionClient(conn)
 
-	_, err = client.SendToken(context.Background(), &proto.Token{HasToken: true})
+	_, err = s.client.SendToken(context.Background(), &proto.Token{})
 	if err != nil {
 		log.Fatalf("Failed to send token: %v", err)
 	}
 
-	fmt.Println("Token sent to client on port", nextPort)
+	fmt.Println("Token sent to client on port", s.nextPort)
 }
 
-func DoIWantAccess(myPort int) {
-	if rand.Intn(5) == 1 && !wantsAccess {
-		wantsAccess = true
+func (s *server) DoIWantAccess() {
+	if rand.Intn(5) == 1 && !s.wantsAccess {
+		s.wantsAccess = true
 
-		fmt.Printf("Port %d wants access\n", myPort)
+		fmt.Printf("Port %d wants access\n", s.myPort)
 	}
 
 	time.Sleep(2 * time.Second)
 
-	DoIWantAccess(myPort)
+	s.DoIWantAccess()
 }

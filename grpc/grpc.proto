@@ -1,9 +1,7 @@
 syntax = "proto3";
 option go_package = "grpc/proto";
 
-message Token {
-  bool hasToken = 1;
-}
+message Token {}
 
 message Empty {}
 
